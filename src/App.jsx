@@ -17,7 +17,7 @@ function App() {
   });
 
   useEffect(() => {
-    fetch('/public/data.json')
+    fetch('/data.json')
       .then(res => {
         if (!res.ok) {
           throw Error('Fetch not processed');
