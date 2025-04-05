@@ -17,7 +17,7 @@ function App() {
   });
 
   useEffect(() => {
-    fetch(`${process.env.PUBLIC_URL}/public/data.json`)
+    fetch('https://dummyjson.com/quotes')
       .then(res => {
         if (!res.ok) {
           throw Error('Fetch not processed');
