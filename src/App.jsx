@@ -2,38 +2,32 @@ import { useEffect, useState } from 'react'
 import './App.css'
 import Quote from './Quote'
 import Search from './Search';
+import useFetch from './useFetch';
 
 function App() {
-  const [quotes, setQuotes] = useState(null);
-  const [isLoading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [value, setValue] = useState('');
+  const [skip, setSkip] = useState(0);
+  const {data: quotes, isLoading, error, setLoading} = useFetch(`https://dummyjson.com/quotes?limit=10&skip=${skip}`)
   function changeValue(getValue) {
     setValue(getValue);
+  }
+
+  function goNext() {
+    setSkip(skip + 10);
+    setLoading(true);
+  }
+
+  function goPrevious(e) {
+    if(skip == 0) {
+      e.target.disabled = true;
+    } else {
+      setSkip(skip - 10);
+    }
   }
 
   const filteredQuotes = quotes?.filter(quote => {
     return quote.author.toLowerCase().includes(value.toLowerCase());
   });
-
-  useEffect(() => {
-    fetch('https://dummyjson.com/quotes')
-      .then(res => {
-        if (!res.ok) {
-          throw Error('Fetch not processed');
-        }
-        return res.json()
-      })
-      .then((data) => {
-        setQuotes(data.quotes);
-        setLoading(false);
-        setError(null);
-      })
-      .catch(err => {
-        setError(err.message);
-        setLoading(false);
-      })
-  }, [])
   return (
     <>
       <div className="main container">
@@ -45,6 +39,10 @@ function App() {
           {filteredQuotes && filteredQuotes.map(quote =>
             <Quote author={quote.author} quoteId={quote.id} quote={quote.quote} key={quote.id} />
           )}
+        </div>
+        <div className="pagination-btns d-flex gap-2 justify-content-center mb-3">
+          <div className="btn btn-primary" onClick={goPrevious}>Previous</div>
+          <div className="btn btn-primary" onClick={goNext}>Next</div>
         </div>
       </div>
     </>
